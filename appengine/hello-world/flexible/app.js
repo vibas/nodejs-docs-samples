@@ -1,22 +1,7 @@
-// Copyright 2017 Google LLC
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 'use strict';
 
 // [START gae_flex_quickstart]
 const express = require('express');
-
 const app = express();
 
 app.get('/', (req, res) => {
@@ -24,7 +9,7 @@ app.get('/', (req, res) => {
 });
 
 // Get User Endpoint to get userdata in JSON format
-app.get('/getuser', (req,res) => {
+app.get('/getdummyuser', (req,res) => {
   var userdata = {
     username : "Vibas",
     userID : 100,
@@ -41,5 +26,34 @@ app.listen(PORT, () => {
   console.log('Press Ctrl+C to quit.');
 });
 // [END gae_flex_quickstart]
+
+const {Datastore} = require("@google-cloud/datastore");
+const datastore = new Datastore({
+  projectId : "mydailylifehelper-1"
+});
+
+const getUsersFromDataStore = () => {
+  const query = datastore
+  .createQuery('users')
+  .order('name', {descending: true})
+  .limit(5);
+  return datastore.runQuery(query);
+};
+
+// Call GetUsersFromDB function to get all users entries from datastore
+app.get('/getusersfromdb', async (req, res, next) => {
+  try {
+    const [entities] = await getUsersFromDataStore();
+    const users = entities.map(
+      entity => `Name - ${entity.name} | Age - ${entity.age} | Address - ${entity.address}`
+    );
+    res.status(200)
+    .set('Content-Type', 'text/plain')
+    .send(users.join('\n'))
+    .end();
+  } catch (error) {
+    next(error);
+  }
+  });
 
 module.exports = app;
