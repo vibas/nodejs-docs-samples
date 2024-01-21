@@ -23,6 +23,17 @@ app.get('/', (req, res) => {
   res.status(200).send('Hello, world!').end();
 });
 
+// Get User Endpoint to get userdata in JSON format
+app.get('/getuser', (req,res) => {
+  var userdata = {
+    username : "Vibas",
+    userID : 100,
+    address : "Pune",
+    phone : 1009008909
+  }
+  res.status(200).send(userdata).end();
+});
+
 // Start the server
 const PORT = parseInt(process.env.PORT) || 8080;
 app.listen(PORT, () => {
