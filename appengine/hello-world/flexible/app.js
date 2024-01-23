@@ -29,7 +29,8 @@ app.listen(PORT, () => {
 
 const {Datastore} = require("@google-cloud/datastore");
 const datastore = new Datastore({
-  projectId : "mydailylifehelper-1"
+  projectId : "mydailylifehelper-1",
+  databaseId : "mydailylifehelperuser"
 });
 
 const getUsersFromDataStore = () => {
