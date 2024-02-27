@@ -37,7 +37,7 @@ const getUsersFromDataStore = () => {
   const query = datastore
   .createQuery('users')
   .order('name', {descending: true})
-  .limit(5);
+  .limit(10);
   return datastore.runQuery(query);
 };
 
@@ -56,5 +56,37 @@ app.get('/getusersfromdb', async (req, res, next) => {
     next(error);
   }
   });
+
+/**
+ * Insert a user record into the database.
+ *
+ * @param {object} user The user record to insert.
+ */
+const insertUser = user => {
+  return datastore.save({
+    key: datastore.key('users'),
+    data: user,
+  });
+};
+
+app.get('/setusertodb', async (req, res, next) => {
+  // Create a user record to be stored in the database
+  const user = {
+    address: "Test Address",
+    age: 50,
+    name: "Test User Name"
+  };
+
+  try {
+    await insertUser(user);
+    res
+      .status(200)
+      .set('Content-Type', 'text/plain')
+      .send("Database updated with new user data!")
+      .end();
+  } catch (error) {
+    next(error);
+  }
+});
 
 module.exports = app;
